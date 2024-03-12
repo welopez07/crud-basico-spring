@@ -47,13 +47,35 @@ public class UserService {
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
-
-        // Realizar la actualización en la base de datos
+        // Realiza la actualización en la base de datos
         UserModel updatedUser = userRepository.save(user);
 
         return updatedUser;
     }
 
+    public UserModel patchById(UserModel request, Long id){
+        Optional<UserModel> optionalUser = userRepository.findById(id);
+
+        if (optionalUser.isEmpty()){
+            throw new EntityNotFoundException("User with id " + id + " not found");
+        }
+        UserModel user = optionalUser.get();
+
+        if(request.getFirstName() != null){
+            user.setFirstName(request.getFirstName());
+        }
+        if (request.getLastName() != null){
+            user.setLastName(request.getLastName());
+        }
+        if(request.getEmail() != null){
+            user.setEmail(request.getEmail());
+        }
+
+        UserModel patchedUser = userRepository.save(user);
+
+        return patchedUser;
+
+    }
 
     public Boolean deleteUSer(Long id){
         try {

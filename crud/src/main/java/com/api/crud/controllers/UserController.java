@@ -2,6 +2,7 @@ package com.api.crud.controllers;
 
 import com.api.crud.models.UserModel;
 import com.api.crud.services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,10 @@ public class UserController {
 
 
     //En esta clase se realizan las peticiones HTTP y las rutas
-
+    @Autowired
     private final UserService userService;
 
-    @Autowired
+    //@Autowired
     public  UserController(UserService userService){
         this.userService = userService;
     }
@@ -48,10 +49,20 @@ public class UserController {
             return ResponseEntity.ok(updateUser);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
-
         }
     }
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<UserModel> patchUserById(@RequestBody UserModel request, @PathVariable Long id){
+        try {
+            UserModel patchedUser = userService.patchById(request, id);
+            return ResponseEntity.ok(patchedUser);
+        }catch (EntityNotFoundException e){
+            return ResponseEntity.notFound().build();
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
 
     @DeleteMapping(path = "/{id}")
     public String  deleteById(@PathVariable("id") Long id){
